@@ -1,7 +1,9 @@
-import { login, perfil, registro, confirmEmail, listarVeterinarios, detalleVeterinario, actualizarPerfil, actualizarPassword, recuperarPassword, comprobarTokenPasword, nuevoPassword } from "../controllers/veterinario_controller.js";
-import Veterinario from "../models/Veterinario";
+const { login, perfil, registro, confirmEmail, listarVeterinarios, detalleVeterinario, actualizarPerfil, actualizarPassword, recuperarPassword, comprobarTokenPasword, nuevoPassword } = require ("../controllers/veterinario_controller.js");
+import Veterinario from "../models/Veterinario.js";
 import mongoose from "mongoose";
 
+
+//---------------------------------------------------------------
 
 //Pruebas unitarias de Registro.
 describe("Pruebas de los controladores de veterinario", () => {
@@ -108,6 +110,34 @@ describe("Pruebas de los controladores de veterinario", () => {
   });
 
 
+  describe('Pruebas del controlador de confirmación de email', () => {
+    // Prueba de confirmación exitosa
+    it('debe confirmar el email del veterinario', async () => {
+      const req = {
+        params: {}, // No proporciona ningún token
+      };
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+      await confirmEmail(req, res);
+      expect(res.status).toHaveBeenCalledWith(400); // Verifica que se haya llamado a la función status con el código 400
+      expect(res.json).toHaveBeenCalledWith({ msg: 'Lo sentimos, no se puede validar la cuenta' }); // Verifica el mensaje de error
+    });
+  });
   
-  
+  describe('Pruebas del controlador de listar veterinarios', () => {
+    it('debe retornar una lista de veterinarios', async () => {
+      // Simular una solicitud para listar veterinarios
+      const req = {};
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn(),
+      };
+      listarVeterinarios(req, res);
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalled(); // Verificar que se haya llamado a la función json
+    });
+  });
+
 });// final

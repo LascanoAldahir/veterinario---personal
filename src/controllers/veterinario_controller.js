@@ -62,15 +62,34 @@ const registro = async (req,res)=>{
 }
 
 
-const confirmEmail = async (req,res)=>{
-    if(!(req.params.token)) return res.status(400).json({msg:"Lo sentimos, no se puede validar la cuenta"})
-    const veterinarioBDD = await Veterinario.findOne({token:req.params.token})
-    if(!veterinarioBDD?.token) return res.status(404).json({msg:"La cuenta ya ha sido confirmada"})
-    veterinarioBDD.token = null
-    veterinarioBDD.confirmEmail=true
-    await veterinarioBDD.save()
-    res.status(200).json({msg:"Token confirmado, ya puedes iniciar sesión"}) 
+const confirmEmail = async (req, res) => {
+    // Verificamos si el token está presente en la solicitud
+    if (!req.params.token) {
+        return res.status(400).json({ msg: "Lo sentimos, no se puede validar la cuenta" });
+    }
+
+    try {
+        // Buscamos al veterinario en la base de datos usando el token
+        const veterinarioBDD = await Veterinario.findOne({ token: req.params.token });
+
+        // Verificamos si se encontró un veterinario y si su token está presente
+        if (!veterinarioBDD || !veterinarioBDD.token) {
+            return res.status(404).json({ msg: "La cuenta ya ha sido confirmada o el token es inválido" });
+        }
+
+        // Actualizamos el token y marcamos la confirmación del email como verdadera
+        veterinarioBDD.token = null;
+        veterinarioBDD.confirmEmail = true;
+        await veterinarioBDD.save();
+
+        // Enviamos una respuesta exitosa
+        return res.status(200).json({ msg: "Token confirmado, ya puedes iniciar sesión" });
+    } catch (error) {
+        console.error("Error al confirmar el email:", error);
+        return res.status(500).json({ msg: "Ha ocurrido un error al confirmar el email" });
+    }
 }
+
 
 
 
