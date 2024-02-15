@@ -5,7 +5,11 @@ import mongoose from "mongoose";
 
 
 const login = async(req,res)=>{
+    console.log("Entrando en la función de login");
+    console.log("Body:", req.body);
     const {email,password} = req.body
+    console.log("Email:", email);
+    console.log("Password:", password);
     if (Object.values(req.body).includes("")) return res.status(404).json({msg:"Lo sentimos, debes llenar todos los campos"})
     const veterinarioBDD = await Veterinario.findOne({email})
     if(veterinarioBDD?.confirmEmail===false) return res.status(403).json({msg:"Lo sentimos, debe verificar su cuenta"})
@@ -13,9 +17,13 @@ const login = async(req,res)=>{
     const verificarPassword = await veterinarioBDD.matchPassword(password)
     if(!verificarPassword) return res.status(404).json({msg:"Lo sentimos, el password no es el correcto"})
 
-    const token = generarJWT(veterinarioBDD._id,"veterinario")
-		const {nombre,apellido,direccion,telefono,_id} = veterinarioBDD
-    res.status(200).json({
+    const token = generarJWT(veterinarioBDD._id,"veterinario");
+        console.log("Token generado:", token); // Línea agregada
+		const {nombre,apellido,direccion,telefono,_id} = veterinarioBDD;
+        console.log("Datos del veterinario:", { nombre, apellido, direccion, telefono, _id, email: veterinarioBDD.email }); // Línea agregada
+        console.log("Token:", token);
+        // Verificación exitosa del inicio de sesión
+        res.status(200).json({
         token,
         nombre,
         apellido,
@@ -52,8 +60,6 @@ const registro = async (req,res)=>{
     await nuevoVeterinario.save()
     res.status(200).json({msg:"Revisa tu correo electrónico para confirmar tu cuenta"})
 }
-
-
 
 
 const confirmEmail = async (req,res)=>{
@@ -150,7 +156,7 @@ const nuevoPassword = async (req,res)=>{
 
 
 export {
-    login,
+    login, 
     perfil,
     registro,
     confirmEmail,
